@@ -38,7 +38,7 @@ logs/
 *.log
 
 # Render/service secrets
-render.yaml
+# (render.yaml is committed to repo to allow infra-as-code; remove the line above if you want it ignored)
 
 # Ignore local secrets
 .env.local

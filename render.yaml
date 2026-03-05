@@ -1,0 +1,42 @@
+# Render service configuration for GatePassSystem
+# Copy this file into the repository root. Render will read it when creating
+# a new service from this repo and branch.
+services:
+  - type: web
+    name: gatepass-system
+    env: python
+    region: oregon
+    plan: free
+    branch: main
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn -k uvicorn.workers.UvicornWorker app.main:app --bind 0.0.0.0:$PORT --workers 2
+    # Environment variables: set these in Render dashboard for production secrets
+    envVars:
+      - key: ADMIN_EMAIL
+        value: admin@123
+      - key: ADMIN_PASSWORD
+        value: admin123
+      - key: ADMIN_NAME
+        value: "Super Admin"
+      - key: SECRET_KEY
+        # Ask Render to generate a secret in the UI; here we use a placeholder
+        value: replace-this-with-a-secure-random-value
+      - key: DATABASE_URL
+        # Default is a local sqlite file. For production use a managed DB like Postgres
+        value: sqlite:///./data.db
+    healthCheckPath: /
+    autoDeploy: true
+    pullRequestPreviews: false
+    instanceType: starter
+    instanceCount: 1
+services:
+  - type: web
+    name: campus-gatepass-system
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port 10000
+    envVars:
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DATABASE_URL
+        value: sqlite:///./gatepass.db
