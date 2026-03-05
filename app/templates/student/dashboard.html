@@ -1,0 +1,194 @@
+{% extends "base.html" %}
+{% block title %}Dashboard — Campus GatePass{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-slate-50 pb-24">
+
+    <!-- ── Header ────────────────────────────────────────────────────── -->
+    <div class="bg-gradient-to-br from-indigo-600 via-purple-600 to-indigo-700 px-5 pt-14 pb-20 rounded-b-[2.5rem] relative overflow-hidden">
+        <!-- Decorative circles -->
+        <div class="absolute -top-10 -right-10 w-40 h-40 bg-white/5 rounded-full"></div>
+        <div class="absolute top-20 -left-8 w-24 h-24 bg-white/5 rounded-full"></div>
+
+        <div class="max-w-lg mx-auto relative">
+            <p class="text-indigo-200 text-sm font-medium">Welcome back,</p>
+            <h1 class="text-2xl font-extrabold text-white mt-0.5 tracking-tight">{{ student.name }}</h1>
+            <div class="flex flex-wrap items-center gap-2 mt-3">
+                <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-white/15 text-white/90 backdrop-blur">
+                    {{ student.department }}
+                </span>
+                <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-white/15 text-white/90 backdrop-blur">
+                    {{ student.year }}
+                </span>
+                <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-white/15 text-white/90 backdrop-blur">
+                    Roll: {{ student.roll_number }}
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── Content ───────────────────────────────────────────────────── -->
+    <div class="max-w-lg mx-auto px-5 -mt-12 space-y-5">
+
+        <!-- Active Pass Card -->
+        {% if active_pass %}
+        <a href="/student/pass/{{ active_pass.id }}" class="block group">
+            <div class="relative overflow-hidden bg-white rounded-2xl shadow-xl shadow-slate-200/60 border border-slate-100 p-5 transition-all group-hover:shadow-2xl group-hover:-translate-y-0.5">
+                <div class="absolute top-0 right-0 w-36 h-36 bg-gradient-to-br from-indigo-50 to-purple-50 rounded-full -translate-y-14 translate-x-14"></div>
+                <div class="relative">
+                    <div class="flex items-center justify-between mb-3">
+                        <h3 class="font-bold text-slate-800 text-[15px]">Active Pass</h3>
+                        {% if active_pass.status == 'Pending' %}
+                        <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-600 border border-amber-200 animate-gentle-pulse">
+                            <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+                            Pending
+                        </span>
+                        {% elif active_pass.status == 'Approved' %}
+                        <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-600 border border-emerald-200">
+                            <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                            Approved
+                        </span>
+                        {% endif %}
+                    </div>
+
+                    <p class="text-sm text-slate-600 mb-2 leading-relaxed">{{ active_pass.reason[:80] }}{% if active_pass.reason|length > 80 %}…{% endif %}</p>
+
+                    <div class="flex items-center gap-4 text-xs text-slate-500">
+                        <span class="inline-flex items-center gap-1">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                            {{ active_pass.date }}
+                        </span>
+                        <span class="inline-flex items-center gap-1">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            {{ active_pass.out_time }} — {{ active_pass.return_time }}
+                        </span>
+                    </div>
+
+                    {% if active_pass.status == 'Pending' %}
+                    <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
+                        <form method="POST" action="/student/cancel/{{ active_pass.id }}"
+                              onsubmit="return confirm('Cancel this request?')">
+                            <button type="submit"
+                                    class="text-xs text-red-500 font-semibold hover:text-red-700 transition-colors">
+                                Cancel Request
+                            </button>
+                        </form>
+                        <span class="text-[11px] text-slate-400">Awaiting admin review</span>
+                    </div>
+                    {% elif active_pass.status == 'Approved' %}
+                    <p class="mt-3 text-xs text-indigo-600 font-semibold">Tap to view gate pass card →</p>
+                    {% endif %}
+                </div>
+            </div>
+        </a>
+
+        {% else %}
+        <!-- No Active Pass -->
+        <div class="bg-white rounded-2xl shadow-xl shadow-slate-200/60 border border-slate-100 p-7 text-center">
+            <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-slate-50 mb-3">
+                <svg class="w-7 h-7 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                          d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                </svg>
+            </div>
+            <p class="text-slate-500 text-sm mb-4">No active gate pass</p>
+            <a href="/student/raise-pass"
+               class="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600
+                      text-white text-sm font-semibold rounded-xl shadow-lg shadow-indigo-500/25
+                      hover:shadow-xl hover:shadow-indigo-500/40 hover:-translate-y-0.5
+                      active:translate-y-0 transition-all duration-200">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                </svg>
+                Raise New Pass
+            </a>
+        </div>
+        {% endif %}
+
+        <!-- Quick Actions -->
+        <div class="grid grid-cols-2 gap-3">
+            <a href="/student/raise-pass"
+               class="bg-white rounded-2xl shadow-md shadow-slate-100 border border-slate-100 p-4 text-center
+                      hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 group">
+                <div class="inline-flex items-center justify-center w-11 h-11 rounded-xl bg-indigo-50 group-hover:bg-indigo-100 transition mb-2">
+                    <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                    </svg>
+                </div>
+                <p class="text-sm font-semibold text-slate-700">New Pass</p>
+            </a>
+            <a href="/student/history"
+               class="bg-white rounded-2xl shadow-md shadow-slate-100 border border-slate-100 p-4 text-center
+                      hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 group">
+                <div class="inline-flex items-center justify-center w-11 h-11 rounded-xl bg-purple-50 group-hover:bg-purple-100 transition mb-2">
+                    <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                </div>
+                <p class="text-sm font-semibold text-slate-700">History</p>
+            </a>
+        </div>
+
+        <!-- Recent Activity -->
+        {% if recent_passes %}
+        <div>
+            <h2 class="text-base font-bold text-slate-800 mb-3">Recent Activity</h2>
+            <div class="space-y-2.5">
+                {% for p in recent_passes %}
+                <a href="/student/pass/{{ p.id }}"
+                   class="flex items-center justify-between bg-white rounded-xl shadow-sm border border-slate-100
+                          p-4 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
+                    <div class="min-w-0 flex-1 mr-3">
+                        <p class="text-sm font-medium text-slate-700 truncate">{{ p.reason[:45] }}</p>
+                        <p class="text-xs text-slate-400 mt-0.5">{{ p.date }} · {{ p.out_time }}</p>
+                    </div>
+                    {% if p.status == 'Pending' %}
+                    <span class="flex-shrink-0 inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-semibold bg-amber-50 text-amber-600 border border-amber-100">Pending</span>
+                    {% elif p.status == 'Approved' %}
+                    <span class="flex-shrink-0 inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-600 border border-emerald-100">Approved</span>
+                    {% elif p.status == 'Rejected' %}
+                    <span class="flex-shrink-0 inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-semibold bg-red-50 text-red-600 border border-red-100">Rejected</span>
+                    {% elif p.status == 'Expired' %}
+                    <span class="flex-shrink-0 inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-semibold bg-slate-50 text-slate-500 border border-slate-200">Expired</span>
+                    {% elif p.status == 'Cancelled' %}
+                    <span class="flex-shrink-0 inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-semibold bg-gray-50 text-gray-500 border border-gray-200">Cancelled</span>
+                    {% endif %}
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- ── Bottom Navigation ─────────────────────────────────────────── -->
+    <nav class="fixed bottom-0 inset-x-0 bg-white/80 backdrop-blur-2xl border-t border-slate-200/80 z-50 safe-area-bottom">
+        <div class="max-w-lg mx-auto flex items-center justify-around py-2 px-2">
+            <a href="/student/dashboard" class="flex flex-col items-center gap-0.5 px-4 py-1.5 rounded-xl text-indigo-600">
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M11.47 3.84a.75.75 0 011.06 0l8.69 8.69a.75.75 0 101.06-1.06l-8.689-8.69a2.25 2.25 0 00-3.182 0l-8.69 8.69a.75.75 0 001.061 1.06l8.69-8.69z"/>
+                    <path d="M12 5.432l8.159 8.159c.03.03.06.058.091.086v6.198c0 1.035-.84 1.875-1.875 1.875H15.75a.75.75 0 01-.75-.75v-4.5a.75.75 0 00-.75-.75h-4.5a.75.75 0 00-.75.75V21a.75.75 0 01-.75.75H5.625a1.875 1.875 0 01-1.875-1.875v-6.198a2.29 2.29 0 00.091-.086L12 5.432z"/>
+                </svg>
+                <span class="text-[10px] font-bold">Home</span>
+            </a>
+            <a href="/student/raise-pass" class="flex flex-col items-center gap-0.5 px-4 py-1.5 rounded-xl text-slate-400 hover:text-indigo-600 transition">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                </svg>
+                <span class="text-[10px] font-semibold">New Pass</span>
+            </a>
+            <a href="/student/history" class="flex flex-col items-center gap-0.5 px-4 py-1.5 rounded-xl text-slate-400 hover:text-indigo-600 transition">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                <span class="text-[10px] font-semibold">History</span>
+            </a>
+            <a href="/auth/logout" class="flex flex-col items-center gap-0.5 px-4 py-1.5 rounded-xl text-slate-400 hover:text-red-500 transition">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                </svg>
+                <span class="text-[10px] font-semibold">Logout</span>
+            </a>
+        </div>
+    </nav>
+</div>
+{% endblock %}

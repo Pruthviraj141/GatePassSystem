@@ -1,0 +1,273 @@
+{% extends "base.html" %}
+{% block title %}Admin Dashboard — Campus GatePass{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-slate-50" x-data="{ notif: null }" @keydown.escape="notif = null">
+
+    <!-- Toast Notification -->
+    <div x-show="notif" x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0 -translate-y-4" x-transition:enter-end="opacity-100 translate-y-0"
+         x-transition:leave="transition ease-in duration-200"
+         x-transition:leave-start="opacity-100 translate-y-0" x-transition:leave-end="opacity-0 -translate-y-4"
+         class="fixed top-4 left-1/2 -translate-x-1/2 z-[100] w-[90%] max-w-md"
+         style="display: none;">
+        <div class="bg-indigo-600 text-white rounded-2xl shadow-2xl shadow-indigo-500/30 p-4 flex items-center gap-3">
+            <div class="flex-shrink-0 w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+                </svg>
+            </div>
+            <p class="text-sm font-medium flex-1" x-text="notif"></p>
+            <button @click="notif = null" class="flex-shrink-0 text-white/60 hover:text-white transition">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <!-- Sidebar (Desktop) + Mobile Header -->
+    <div class="lg:flex">
+
+        <!-- Desktop Sidebar -->
+        <aside class="hidden lg:flex lg:flex-col lg:w-64 lg:fixed lg:inset-y-0 bg-slate-900 border-r border-slate-800">
+            <div class="p-6 border-b border-slate-800">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
+                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h2 class="text-white font-bold text-sm">GatePass Admin</h2>
+                        <p class="text-slate-500 text-xs">{{ admin.name }}</p>
+                    </div>
+                </div>
+            </div>
+            <nav class="flex-1 p-4 space-y-1">
+                <a href="/admin/dashboard" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-white bg-white/10 rounded-xl">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
+                    Dashboard
+                </a>
+                <a href="/admin/requests" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-slate-400 hover:text-white hover:bg-white/5 rounded-xl transition">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+                    Requests
+                </a>
+                <a href="/admin/admins" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-slate-400 hover:text-white hover:bg-white/5 rounded-xl transition">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+                    Admins
+                </a>
+            </nav>
+            <div class="p-4 border-t border-slate-800">
+                <a href="/auth/logout" class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-slate-400 hover:text-red-400 rounded-xl transition">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+                    Logout
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="lg:pl-64 flex-1">
+            <!-- Mobile Header -->
+            <div class="lg:hidden bg-white border-b border-slate-200 px-5 py-4 flex items-center justify-between sticky top-0 z-40">
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
+                        <svg class="w-4.5 h-4.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h2 class="font-bold text-sm text-slate-800">Dashboard</h2>
+                        <p class="text-xs text-slate-400">{{ admin.name }}</p>
+                    </div>
+                </div>
+                <a href="/auth/logout" class="text-slate-400 hover:text-red-500 transition p-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                    </svg>
+                </a>
+            </div>
+
+            <div class="p-5 lg:p-8 max-w-5xl mx-auto">
+                <!-- Stats Grid -->
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4 mb-8">
+                    <div class="bg-white rounded-2xl shadow-md shadow-slate-100 border border-slate-100 p-4 lg:p-5">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="w-10 h-10 rounded-xl bg-amber-50 flex items-center justify-center">
+                                <svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            </div>
+                        </div>
+                        <p class="text-2xl font-extrabold text-slate-800">{{ counts.pending }}</p>
+                        <p class="text-xs text-slate-500 font-medium mt-0.5">Pending</p>
+                    </div>
+                    <div class="bg-white rounded-2xl shadow-md shadow-slate-100 border border-slate-100 p-4 lg:p-5">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center">
+                                <svg class="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            </div>
+                        </div>
+                        <p class="text-2xl font-extrabold text-slate-800">{{ counts.approved }}</p>
+                        <p class="text-xs text-slate-500 font-medium mt-0.5">Approved</p>
+                    </div>
+                    <div class="bg-white rounded-2xl shadow-md shadow-slate-100 border border-slate-100 p-4 lg:p-5">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="w-10 h-10 rounded-xl bg-red-50 flex items-center justify-center">
+                                <svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            </div>
+                        </div>
+                        <p class="text-2xl font-extrabold text-slate-800">{{ counts.rejected }}</p>
+                        <p class="text-xs text-slate-500 font-medium mt-0.5">Rejected</p>
+                    </div>
+                    <div class="bg-white rounded-2xl shadow-md shadow-slate-100 border border-slate-100 p-4 lg:p-5">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center">
+                                <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/></svg>
+                            </div>
+                        </div>
+                        <p class="text-2xl font-extrabold text-slate-800">{{ counts.expired }}</p>
+                        <p class="text-xs text-slate-500 font-medium mt-0.5">Expired</p>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="flex flex-wrap gap-2 mb-6">
+                    <a href="/admin/requests?status=Pending"
+                       class="inline-flex items-center gap-2 px-4 py-2.5 bg-amber-50 text-amber-700 text-sm font-semibold rounded-xl border border-amber-200 hover:bg-amber-100 transition">
+                        View Pending ({{ counts.pending }})
+                    </a>
+                    <a href="/admin/requests"
+                       class="inline-flex items-center gap-2 px-4 py-2.5 bg-white text-slate-700 text-sm font-semibold rounded-xl border border-slate-200 hover:bg-slate-50 transition">
+                        All Requests
+                    </a>
+                    <a href="/admin/admins"
+                       class="inline-flex items-center gap-2 px-4 py-2.5 bg-white text-slate-700 text-sm font-semibold rounded-xl border border-slate-200 hover:bg-slate-50 transition">
+                        Manage Admins
+                    </a>
+                </div>
+
+                <!-- Recent Pending -->
+                {% if recent_pending %}
+                <div>
+                    <h2 class="text-base font-bold text-slate-800 mb-3">Recent Pending Requests</h2>
+                    <div class="space-y-3">
+                        {% for p in recent_pending %}
+                        <div id="pass-card-{{ p.id }}"
+                             class="bg-white rounded-2xl shadow-md shadow-slate-100 border border-slate-100 p-5 animate-fade-in-up"
+                             x-data x-init="$el.style.animationDelay = '{{ loop.index0 * 60 }}ms'">
+                            <div class="flex items-center justify-between mb-3">
+                                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-amber-50 text-amber-600 border border-amber-100">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-amber-400 animate-gentle-pulse"></span>
+                                    Pending
+                                </span>
+                                <span class="text-xs text-slate-400 font-mono">#{{ '%04d' % p.id }}</span>
+                            </div>
+                            <div class="flex items-start justify-between">
+                                <div class="flex-1 min-w-0 mr-4">
+                                    <p class="text-sm font-semibold text-slate-800">{{ p.student.name }}</p>
+                                    <p class="text-xs text-slate-500 mt-0.5">{{ p.student.roll_number }} · {{ p.student.department }}</p>
+                                    <p class="text-sm text-slate-600 mt-2 leading-relaxed">{{ p.reason[:60] }}{% if p.reason|length > 60 %}…{% endif %}</p>
+                                    <div class="flex items-center gap-3 mt-2 text-xs text-slate-400">
+                                        <span>{{ p.date }}</span>
+                                        <span>{{ p.out_time }} — {{ p.return_time }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-2 mt-4 pt-3 border-t border-slate-50">
+                                <button hx-post="/admin/approve/{{ p.id }}" hx-target="#pass-card-{{ p.id }}" hx-swap="outerHTML"
+                                        class="flex-1 py-2.5 bg-emerald-500 text-white text-sm font-semibold rounded-xl
+                                               hover:bg-emerald-600 active:bg-emerald-700 transition-colors shadow-sm">
+                                    Approve
+                                </button>
+                                <button hx-post="/admin/reject/{{ p.id }}" hx-target="#pass-card-{{ p.id }}" hx-swap="outerHTML"
+                                        hx-confirm="Reject this gate pass request?"
+                                        class="flex-1 py-2.5 bg-white text-red-600 text-sm font-semibold rounded-xl border border-red-200
+                                               hover:bg-red-50 active:bg-red-100 transition-colors">
+                                    Reject
+                                </button>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% else %}
+                <div class="bg-white rounded-2xl shadow-md border border-slate-100 p-8 text-center">
+                    <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-emerald-50 mb-3">
+                        <svg class="w-7 h-7 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </div>
+                    <p class="text-slate-600 font-medium text-sm">All caught up!</p>
+                    <p class="text-slate-400 text-xs mt-1">No pending requests</p>
+                </div>
+                {% endif %}
+            </div>
+        </main>
+    </div>
+
+    <!-- Mobile Bottom Nav -->
+    <nav class="lg:hidden fixed bottom-0 inset-x-0 bg-white/80 backdrop-blur-2xl border-t border-slate-200/80 z-50 safe-area-bottom">
+        <div class="max-w-lg mx-auto flex items-center justify-around py-2 px-2">
+            <a href="/admin/dashboard" class="flex flex-col items-center gap-0.5 px-4 py-1.5 text-indigo-600">
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M11.47 3.84a.75.75 0 011.06 0l8.69 8.69a.75.75 0 101.06-1.06l-8.689-8.69a2.25 2.25 0 00-3.182 0l-8.69 8.69a.75.75 0 001.061 1.06l8.69-8.69z"/><path d="M12 5.432l8.159 8.159c.03.03.06.058.091.086v6.198c0 1.035-.84 1.875-1.875 1.875H15.75a.75.75 0 01-.75-.75v-4.5a.75.75 0 00-.75-.75h-4.5a.75.75 0 00-.75.75V21a.75.75 0 01-.75.75H5.625a1.875 1.875 0 01-1.875-1.875v-6.198a2.29 2.29 0 00.091-.086L12 5.432z"/></svg>
+                <span class="text-[10px] font-bold">Dashboard</span>
+            </a>
+            <a href="/admin/requests" class="flex flex-col items-center gap-0.5 px-4 py-1.5 text-slate-400 hover:text-indigo-600 transition">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+                <span class="text-[10px] font-semibold">Requests</span>
+            </a>
+            <a href="/admin/admins" class="flex flex-col items-center gap-0.5 px-4 py-1.5 text-slate-400 hover:text-indigo-600 transition">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+                <span class="text-[10px] font-semibold">Admins</span>
+            </a>
+            <a href="/auth/logout" class="flex flex-col items-center gap-0.5 px-4 py-1.5 text-slate-400 hover:text-red-500 transition">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+                <span class="text-[10px] font-semibold">Logout</span>
+            </a>
+        </div>
+    </nav>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // WebSocket for live notifications (Alpine.js v3 compatible)
+    (function() {
+        const protocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
+        let ws;
+
+        function connect() {
+            ws = new WebSocket(`${protocol}//${location.host}/ws/notifications`);
+            ws.onmessage = function(event) {
+                try {
+                    const data = JSON.parse(event.data);
+                    if (data.type === 'new_request') {
+                        // Alpine.js v3 API — use Alpine.$data()
+                        const el = document.querySelector('[x-data]');
+                        if (el) {
+                            const alpineData = Alpine.$data(el);
+                            if (alpineData) {
+                                alpineData.notif = data.message;
+                                setTimeout(() => { alpineData.notif = null; }, 6000);
+                            }
+                        }
+                        // Reload to show new request
+                        setTimeout(() => location.reload(), 2000);
+                    }
+                } catch(e) {
+                    console.error('[ws] parse error:', e);
+                }
+            };
+            ws.onclose = function() {
+                // Reconnect after 5 s
+                setTimeout(connect, 5000);
+            };
+            ws.onerror = function() {
+                ws.close();
+            };
+        }
+
+        connect();
+    })();
+</script>
+{% endblock %}

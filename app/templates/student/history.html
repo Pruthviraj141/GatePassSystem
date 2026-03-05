@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+{% block title %}History — Campus GatePass{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-slate-50 pb-24">
+
+    <!-- Header -->
+    <div class="bg-gradient-to-br from-indigo-600 via-purple-600 to-indigo-700 px-5 pt-14 pb-8 rounded-b-[2.5rem] relative overflow-hidden">
+        <div class="absolute -top-10 -right-10 w-40 h-40 bg-white/5 rounded-full"></div>
+        <div class="max-w-lg mx-auto relative">
+            <h1 class="text-2xl font-extrabold text-white tracking-tight">Pass History</h1>
+            <p class="text-indigo-200 text-sm mt-1">{{ passes|length }} total request{{ 's' if passes|length != 1 else '' }}</p>
+        </div>
+    </div>
+
+    <div class="max-w-lg mx-auto px-5 -mt-4">
+        {% if passes %}
+        <div class="space-y-3">
+            {% for p in passes %}
+            <a href="/student/pass/{{ p.id }}"
+               class="block bg-white rounded-2xl shadow-md shadow-slate-100 border border-slate-100 p-4
+                      hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 animate-fade-in-up"
+               x-data x-init="$el.style.animationDelay = '{{ loop.index0 * 50 }}ms'">
+                <div class="flex items-start justify-between mb-2">
+                    <div class="flex-1 min-w-0 mr-3">
+                        <p class="text-sm font-semibold text-slate-800 truncate">{{ p.reason[:50] }}</p>
+                        <p class="text-xs text-slate-400 mt-1">
+                            {{ p.date }}
+                            <span class="mx-1">·</span>
+                            {{ p.out_time }} — {{ p.return_time }}
+                        </p>
+                    </div>
+                    {% if p.status == 'Pending' %}
+                    <span class="flex-shrink-0 inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-amber-50 text-amber-600 border border-amber-100">
+                        <span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
+                        Pending
+                    </span>
+                    {% elif p.status == 'Approved' %}
+                    <span class="flex-shrink-0 inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-600 border border-emerald-100">
+                        <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                        Approved
+                    </span>
+                    {% elif p.status == 'Rejected' %}
+                    <span class="flex-shrink-0 inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-semibold bg-red-50 text-red-600 border border-red-100">
+                        Rejected
+                    </span>
+                    {% elif p.status == 'Expired' %}
+                    <span class="flex-shrink-0 inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-semibold bg-slate-50 text-slate-500 border border-slate-200">
+                        Expired
+                    </span>
+                    {% elif p.status == 'Cancelled' %}
+                    <span class="flex-shrink-0 inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-semibold bg-gray-50 text-gray-500 border border-gray-200">
+                        Cancelled
+                    </span>
+                    {% endif %}
+                </div>
+                <div class="flex items-center justify-between">
+                    <span class="text-[11px] text-slate-400 font-mono">#{{ '%04d' % p.id }}</span>
+                    <svg class="w-4 h-4 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                    </svg>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="bg-white rounded-2xl shadow-lg border border-slate-100 p-8 text-center mt-4">
+            <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-slate-50 mb-3">
+                <svg class="w-7 h-7 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+                </svg>
+            </div>
+            <p class="text-slate-500 text-sm mb-1">No history yet</p>
+            <p class="text-slate-400 text-xs">Your gate pass requests will appear here</p>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Bottom Navigation -->
+    <nav class="fixed bottom-0 inset-x-0 bg-white/80 backdrop-blur-2xl border-t border-slate-200/80 z-50 safe-area-bottom">
+        <div class="max-w-lg mx-auto flex items-center justify-around py-2 px-2">
+            <a href="/student/dashboard" class="flex flex-col items-center gap-0.5 px-4 py-1.5 rounded-xl text-slate-400 hover:text-indigo-600 transition">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                </svg>
+                <span class="text-[10px] font-semibold">Home</span>
+            </a>
+            <a href="/student/raise-pass" class="flex flex-col items-center gap-0.5 px-4 py-1.5 rounded-xl text-slate-400 hover:text-indigo-600 transition">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                </svg>
+                <span class="text-[10px] font-semibold">New Pass</span>
+            </a>
+            <a href="/student/history" class="flex flex-col items-center gap-0.5 px-4 py-1.5 rounded-xl text-indigo-600">
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                    <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zM12.75 6a.75.75 0 00-1.5 0v6c0 .414.336.75.75.75h4.5a.75.75 0 000-1.5h-3.75V6z" clip-rule="evenodd"/>
+                </svg>
+                <span class="text-[10px] font-bold">History</span>
+            </a>
+            <a href="/auth/logout" class="flex flex-col items-center gap-0.5 px-4 py-1.5 rounded-xl text-slate-400 hover:text-red-500 transition">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                </svg>
+                <span class="text-[10px] font-semibold">Logout</span>
+            </a>
+        </div>
+    </nav>
+</div>
+{% endblock %}

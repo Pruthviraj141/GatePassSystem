@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+{% block title %}Verify Gate Pass{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-b from-slate-100 to-white flex items-center justify-center p-4">
+    <div class="w-full max-w-md animate-fade-in-up">
+
+        {% if gatepass %}
+        <!-- ── Verified Card ─────────────────────────────────── -->
+        <div class="text-center mb-6">
+            {% if status == 'VALID PASS' %}
+            <div class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-emerald-100 mb-4">
+                <svg class="w-10 h-10 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                </svg>
+            </div>
+            <h1 class="text-2xl font-extrabold text-emerald-700 tracking-tight">VALID PASS</h1>
+            <p class="text-sm text-emerald-600 mt-1">This gate pass is currently active</p>
+            {% elif status == 'EXPIRED PASS' %}
+            <div class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-amber-100 mb-4">
+                <svg class="w-10 h-10 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+            </div>
+            <h1 class="text-2xl font-extrabold text-amber-700 tracking-tight">EXPIRED PASS</h1>
+            <p class="text-sm text-amber-600 mt-1">This gate pass has expired</p>
+            {% else %}
+            <div class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-red-100 mb-4">
+                <svg class="w-10 h-10 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+            </div>
+            <h1 class="text-2xl font-extrabold text-red-700 tracking-tight">INVALID PASS</h1>
+            <p class="text-sm text-red-600 mt-1">This gate pass is not valid</p>
+            {% endif %}
+        </div>
+
+        <!-- Details Card -->
+        <div class="bg-white rounded-3xl shadow-2xl shadow-slate-200/60 border border-slate-100 overflow-hidden">
+            <!-- Header gradient -->
+            <div class="h-2
+                        {% if status == 'VALID PASS' %}bg-gradient-to-r from-emerald-400 to-teal-500
+                        {% elif status == 'EXPIRED PASS' %}bg-gradient-to-r from-amber-400 to-orange-500
+                        {% else %}bg-gradient-to-r from-red-400 to-pink-500{% endif %}">
+            </div>
+
+            <div class="p-6 space-y-4">
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <p class="text-[11px] font-medium text-slate-400 uppercase tracking-wider">Name</p>
+                        <p class="text-sm font-semibold text-slate-800 mt-0.5">{{ gatepass.student.name }}</p>
+                    </div>
+                    <div>
+                        <p class="text-[11px] font-medium text-slate-400 uppercase tracking-wider">Roll Number</p>
+                        <p class="text-sm font-semibold text-slate-800 mt-0.5">{{ gatepass.student.roll_number }}</p>
+                    </div>
+                    <div>
+                        <p class="text-[11px] font-medium text-slate-400 uppercase tracking-wider">Department</p>
+                        <p class="text-sm font-semibold text-slate-800 mt-0.5">{{ gatepass.student.department }}</p>
+                    </div>
+                    <div>
+                        <p class="text-[11px] font-medium text-slate-400 uppercase tracking-wider">Year</p>
+                        <p class="text-sm font-semibold text-slate-800 mt-0.5">{{ gatepass.student.year }}</p>
+                    </div>
+                </div>
+
+                <div class="h-px bg-slate-100"></div>
+
+                <div>
+                    <p class="text-[11px] font-medium text-slate-400 uppercase tracking-wider">Reason</p>
+                    <p class="text-sm text-slate-700 mt-0.5 leading-relaxed">{{ gatepass.reason }}</p>
+                </div>
+
+                <div class="grid grid-cols-3 gap-3">
+                    <div>
+                        <p class="text-[11px] font-medium text-slate-400 uppercase tracking-wider">Date</p>
+                        <p class="text-sm font-semibold text-slate-800 mt-0.5">{{ gatepass.date }}</p>
+                    </div>
+                    <div>
+                        <p class="text-[11px] font-medium text-slate-400 uppercase tracking-wider">Out Time</p>
+                        <p class="text-sm font-semibold text-slate-800 mt-0.5">{{ gatepass.out_time }}</p>
+                    </div>
+                    <div>
+                        <p class="text-[11px] font-medium text-slate-400 uppercase tracking-wider">Return</p>
+                        <p class="text-sm font-semibold text-slate-800 mt-0.5">{{ gatepass.return_time }}</p>
+                    </div>
+                </div>
+
+                <div class="h-px bg-slate-100"></div>
+
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-[11px] font-medium text-slate-400 uppercase tracking-wider">Status</p>
+                        {% if status == 'VALID PASS' %}
+                        <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-600 border border-emerald-200 mt-1">
+                            <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                            Valid
+                        </span>
+                        {% elif status == 'EXPIRED PASS' %}
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-600 border border-amber-200 mt-1">
+                            Expired
+                        </span>
+                        {% else %}
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-red-50 text-red-600 border border-red-200 mt-1">
+                            Invalid
+                        </span>
+                        {% endif %}
+                    </div>
+                    <span class="text-xs text-slate-400 font-mono">#{{ '%04d' % gatepass.id }}</span>
+                </div>
+            </div>
+        </div>
+
+        {% else %}
+        <!-- ── Invalid Token ────────────────────────────────── -->
+        <div class="text-center">
+            <div class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-red-100 mb-4">
+                <svg class="w-10 h-10 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/>
+                </svg>
+            </div>
+            <h1 class="text-2xl font-extrabold text-red-700 tracking-tight">INVALID PASS</h1>
+            <p class="text-sm text-red-600 mt-1 mb-6">This gate pass does not exist or the QR code is invalid</p>
+
+            <div class="bg-white rounded-2xl shadow-lg border border-slate-100 p-6 text-center">
+                <p class="text-slate-500 text-sm">If you believe this is an error, please contact the campus administration.</p>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Footer -->
+        <div class="text-center mt-6">
+            <p class="text-xs text-slate-400">Campus GatePass Verification System</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

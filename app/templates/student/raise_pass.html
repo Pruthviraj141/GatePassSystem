@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+{% block title %}Raise Pass — Campus GatePass{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-slate-50 pb-24">
+
+    <!-- Header -->
+    <div class="bg-gradient-to-br from-indigo-600 via-purple-600 to-indigo-700 px-5 pt-14 pb-8 rounded-b-[2.5rem] relative overflow-hidden">
+        <div class="absolute -top-10 -right-10 w-40 h-40 bg-white/5 rounded-full"></div>
+        <div class="max-w-lg mx-auto relative">
+            <a href="/student/dashboard" class="inline-flex items-center gap-1 text-white/70 text-sm mb-3 hover:text-white transition">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                </svg>
+                Back
+            </a>
+            <h1 class="text-2xl font-extrabold text-white tracking-tight">Raise Gate Pass</h1>
+            <p class="text-indigo-200 text-sm mt-1">Fill in details for your request</p>
+        </div>
+    </div>
+
+    <div class="max-w-lg mx-auto px-5 -mt-4">
+
+        {% if has_active %}
+        <!-- Warning: already active -->
+        <div class="bg-amber-50 border border-amber-200 rounded-2xl p-5 text-center">
+            <div class="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-amber-100 mb-3">
+                <svg class="w-6 h-6 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                </svg>
+            </div>
+            <h3 class="font-bold text-amber-800 mb-1">Active Request Exists</h3>
+            <p class="text-sm text-amber-600 mb-4">You already have a pending or approved gate pass. You can create a new one after it's resolved.</p>
+            <a href="/student/dashboard"
+               class="inline-flex items-center gap-2 px-5 py-2.5 bg-amber-600 text-white text-sm font-semibold rounded-xl hover:bg-amber-700 transition">
+                Go to Dashboard
+            </a>
+        </div>
+
+        {% else %}
+        <!-- Form -->
+        <div class="bg-white rounded-2xl shadow-xl shadow-slate-200/60 border border-slate-100 p-6">
+
+            {% if error %}
+            <div class="mb-5 p-3.5 bg-red-50 border border-red-200 rounded-2xl text-sm text-red-600 flex items-center gap-2.5">
+                <svg class="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                </svg>
+                {{ error }}
+            </div>
+            {% endif %}
+
+            <form method="POST" action="/student/raise-pass" class="space-y-5" x-data="{ reason: '', whole: false }">
+                <!-- Reason -->
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-2">Reason for leaving</label>
+                    <textarea name="reason" rows="3" required maxlength="500"
+                              x-model="reason"
+                              class="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50/50
+                                     focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10
+                                     transition-all outline-none text-sm placeholder-slate-400 resize-none"
+                              placeholder="e.g. Going home for family function"></textarea>
+                    <p class="text-xs text-slate-400 mt-1 text-right" x-text="reason.length + '/500'"></p>
+                </div>
+
+                <!-- Date -->
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-2">Date</label>
+                    <input type="date" name="date" required
+                           class="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50/50
+                                  focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10
+                                  transition-all outline-none text-sm text-slate-700">
+                </div>
+
+                <!-- Time -->
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-2">Out Time</label>
+                        <input type="time" name="out_time" required
+                               class="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50/50
+                                      focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10
+                                      transition-all outline-none text-sm text-slate-700">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-2">Return Time</label>
+                        <!-- Return time input is hidden when "Whole day" is checked -->
+                        <input x-show="!whole" type="time" name="return_time" required
+                               class="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50/50
+                                      focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10
+                                      transition-all outline-none text-sm text-slate-700">
+                        <div class="mt-2 flex items-center gap-2 text-sm text-slate-600">
+                            <input type="checkbox" id="whole_day" name="whole_day" x-model="whole" value="1" class="w-4 h-4">
+                            <label for="whole_day" class="select-none">Whole day (not returning today)</label>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit"
+                        class="w-full py-3.5 px-4 bg-gradient-to-r from-indigo-600 to-purple-600 text-white
+                               font-semibold rounded-xl shadow-lg shadow-indigo-500/25
+                               hover:shadow-xl hover:shadow-indigo-500/40 hover:-translate-y-0.5
+                               active:translate-y-0 transition-all duration-200 text-sm">
+                    Submit Request
+                </button>
+            </form>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Bottom Navigation -->
+    <nav class="fixed bottom-0 inset-x-0 bg-white/80 backdrop-blur-2xl border-t border-slate-200/80 z-50 safe-area-bottom">
+        <div class="max-w-lg mx-auto flex items-center justify-around py-2 px-2">
+            <a href="/student/dashboard" class="flex flex-col items-center gap-0.5 px-4 py-1.5 rounded-xl text-slate-400 hover:text-indigo-600 transition">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                </svg>
+                <span class="text-[10px] font-semibold">Home</span>
+            </a>
+            <a href="/student/raise-pass" class="flex flex-col items-center gap-0.5 px-4 py-1.5 rounded-xl text-indigo-600">
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                    <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zM12.75 9a.75.75 0 00-1.5 0v2.25H9a.75.75 0 000 1.5h2.25V15a.75.75 0 001.5 0v-2.25H15a.75.75 0 000-1.5h-2.25V9z" clip-rule="evenodd"/>
+                </svg>
+                <span class="text-[10px] font-bold">New Pass</span>
+            </a>
+            <a href="/student/history" class="flex flex-col items-center gap-0.5 px-4 py-1.5 rounded-xl text-slate-400 hover:text-indigo-600 transition">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                <span class="text-[10px] font-semibold">History</span>
+            </a>
+            <a href="/auth/logout" class="flex flex-col items-center gap-0.5 px-4 py-1.5 rounded-xl text-slate-400 hover:text-red-500 transition">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                </svg>
+                <span class="text-[10px] font-semibold">Logout</span>
+            </a>
+        </div>
+    </nav>
+</div>
+{% endblock %}

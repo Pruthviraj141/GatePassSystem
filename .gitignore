@@ -1,0 +1,57 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyo
+*.pyd
+
+# Environments
+.env
+.venv/
+venv/
+env/
+
+# SQLite DB
+*.db
+
+# VS Code
+.vscode/
+
+# Pytest
+.pytest_cache/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Distribution/build
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# Node
+node_modules/
+
+# Logs
+logs/
+*.log
+
+# Render/service secrets
+render.yaml
+
+# Ignore local secrets
+.env.local
+
+# Ignore coverage
+htmlcov/
+coverage.xml
+
+# Ignore IDE files
+.idea/
+
+# Byte-compiled / cache
+*.so
+
+# Ignore generated assets
+app/static/.cache/

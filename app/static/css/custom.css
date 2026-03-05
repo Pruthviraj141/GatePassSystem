@@ -1,0 +1,72 @@
+/* ─── Campus GatePass — Custom Styles ───────────────────────────────────── */
+
+/* Safe-area padding for iOS notch / home-indicator */
+.safe-area-bottom {
+    padding-bottom: env(safe-area-inset-bottom, 0);
+}
+
+/* Glassmorphism utility */
+.glass {
+    background: rgba(255, 255, 255, 0.75);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+}
+
+/* Hide scrollbar but keep scroll */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* Smooth HTMX transitions */
+.htmx-swapping { opacity: 0; transition: opacity .25s ease-out; }
+.htmx-added    { opacity: 0; }
+.htmx-added.htmx-settling { opacity: 1; transition: opacity .3s ease-in; }
+
+/* Gentle pulse for pending badges */
+@keyframes gentle-pulse {
+    0%, 100% { opacity: 1; }
+    50%      { opacity: .65; }
+}
+.animate-gentle-pulse {
+    animation: gentle-pulse 2s ease-in-out infinite;
+}
+
+/* Fade-in utility */
+@keyframes fade-in-up {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in-up {
+    animation: fade-in-up .4s ease-out both;
+}
+
+/* Slide-down for toasts */
+@keyframes slide-down {
+    from { opacity: 0; transform: translateY(-16px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+.animate-slide-down {
+    animation: slide-down .3s ease-out both;
+}
+
+/* Card shine hover */
+.card-shine {
+    position: relative;
+    overflow: hidden;
+}
+.card-shine::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(105deg, transparent 40%, rgba(255,255,255,.12) 45%, transparent 50%);
+    transform: translateX(-100%);
+    transition: transform .6s ease;
+}
+.card-shine:hover::after {
+    transform: translateX(100%);
+}
+
+/* Tap highlight removal for mobile */
+* { -webkit-tap-highlight-color: transparent; }
+
+/* Body scroll lock helper (used by modals) */
+body.no-scroll { overflow: hidden; }

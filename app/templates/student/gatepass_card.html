@@ -1,0 +1,171 @@
+{% extends "base.html" %}
+{% block title %}Gate Pass — Campus GatePass{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-b from-slate-100 to-slate-50 pb-28">
+
+    <!-- Header -->
+    <div class="px-5 pt-14 pb-6">
+        <div class="max-w-lg mx-auto">
+            <a href="/student/dashboard" class="inline-flex items-center gap-1 text-slate-500 text-sm mb-4 hover:text-indigo-600 transition">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                </svg>
+                Back to Dashboard
+            </a>
+        </div>
+    </div>
+
+    <div class="max-w-lg mx-auto px-5">
+        <!-- ── Digital Gate Pass Card ─────────────────────────────── -->
+        <div class="relative overflow-hidden rounded-3xl shadow-2xl shadow-indigo-500/20">
+            <!-- Card background -->
+            <div class="bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-600 p-6 pb-4">
+                <!-- Decorative elements -->
+                <div class="absolute top-0 right-0 w-48 h-48 bg-white/5 rounded-full -translate-y-20 translate-x-20"></div>
+                <div class="absolute bottom-20 left-0 w-32 h-32 bg-white/5 rounded-full -translate-x-16"></div>
+
+                <div class="relative">
+                    <!-- Header -->
+                    <div class="flex items-center justify-between mb-6">
+                        <div>
+                            <p class="text-white/60 text-[11px] font-medium tracking-widest uppercase">Campus Gate Pass</p>
+                            <p class="text-white/40 text-[10px] font-mono mt-0.5">#{{ '%04d' % gatepass.id }}</p>
+                        </div>
+                        {% if gatepass.status == 'Approved' %}
+                        <span class="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-bold bg-emerald-400/20 text-emerald-200 border border-emerald-400/30 backdrop-blur">
+                            <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                            Approved
+                        </span>
+                        {% elif gatepass.status == 'Pending' %}
+                        <span class="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-bold bg-amber-400/20 text-amber-200 border border-amber-400/30 backdrop-blur animate-gentle-pulse">
+                            <span class="w-1.5 h-1.5 rounded-full bg-amber-300"></span>
+                            Pending
+                        </span>
+                        {% elif gatepass.status == 'Rejected' %}
+                        <span class="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-bold bg-red-400/20 text-red-200 border border-red-400/30 backdrop-blur">
+                            ✗ Rejected
+                        </span>
+                        {% elif gatepass.status == 'Expired' %}
+                        <span class="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-bold bg-white/10 text-white/60 border border-white/20 backdrop-blur">
+                            Expired
+                        </span>
+                        {% elif gatepass.status == 'Cancelled' %}
+                        <span class="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-bold bg-white/10 text-white/60 border border-white/20 backdrop-blur">
+                            Cancelled
+                        </span>
+                        {% endif %}
+                    </div>
+
+                    <!-- Student Info -->
+                    <div class="space-y-1 mb-5">
+                        <h2 class="text-xl font-extrabold text-white tracking-tight">{{ student.name }}</h2>
+                        <div class="flex items-center gap-2">
+                            <span class="text-white/70 text-sm">{{ student.roll_number }}</span>
+                            <span class="text-white/30">·</span>
+                            <span class="text-white/70 text-sm">{{ student.department }}</span>
+                            <span class="text-white/30">·</span>
+                            <span class="text-white/70 text-sm">{{ student.year }}</span>
+                        </div>
+                    </div>
+
+                    <!-- Divider -->
+                    <div class="h-px bg-white/10 mb-5"></div>
+
+                    <!-- Pass Details -->
+                    <div class="space-y-3 mb-5">
+                        <div>
+                            <p class="text-white/40 text-[11px] font-medium tracking-wider uppercase">Reason</p>
+                            <p class="text-white text-sm mt-0.5 leading-relaxed">{{ gatepass.reason }}</p>
+                        </div>
+                        <div class="grid grid-cols-3 gap-3">
+                            <div>
+                                <p class="text-white/40 text-[11px] font-medium tracking-wider uppercase">Date</p>
+                                <p class="text-white text-sm font-semibold mt-0.5">{{ gatepass.date }}</p>
+                            </div>
+                            <div>
+                                <p class="text-white/40 text-[11px] font-medium tracking-wider uppercase">Out</p>
+                                <p class="text-white text-sm font-semibold mt-0.5">{{ gatepass.out_time }}</p>
+                            </div>
+                            <div>
+                                <p class="text-white/40 text-[11px] font-medium tracking-wider uppercase">Return</p>
+                                <p class="text-white text-sm font-semibold mt-0.5">{{ gatepass.return_time }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- QR Section (white background) -->
+            {% if qr_data %}
+            <div class="bg-white px-6 py-6">
+                <div class="flex flex-col items-center">
+                    <img src="data:image/png;base64,{{ qr_data }}" alt="QR Code"
+                         class="w-44 h-44 rounded-xl shadow-inner">
+                    <p class="text-xs text-slate-400 mt-3">Scan QR to verify this pass</p>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Actions -->
+            <div class="bg-slate-50 px-6 py-4 flex gap-3">
+                {% if gatepass.status == 'Approved' %}
+                <a href="/student/download/{{ gatepass.id }}"
+                   class="flex-1 flex items-center justify-center gap-2 py-3 bg-gradient-to-r from-indigo-600 to-purple-600
+                          text-white text-sm font-semibold rounded-xl shadow-lg shadow-indigo-500/25
+                          hover:shadow-xl transition-all">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                    </svg>
+                    Download PDF
+                </a>
+                {% elif gatepass.status == 'Pending' %}
+                <form method="POST" action="/student/cancel/{{ gatepass.id }}" class="flex-1"
+                      onsubmit="return confirm('Cancel this gate pass request?')">
+                    <button type="submit"
+                            class="w-full py-3 bg-red-50 text-red-600 text-sm font-semibold rounded-xl border border-red-200
+                                   hover:bg-red-100 transition-all">
+                        Cancel Request
+                    </button>
+                </form>
+                {% endif %}
+                <a href="/student/dashboard"
+                   class="flex items-center justify-center px-5 py-3 bg-white text-slate-600 text-sm font-semibold rounded-xl border border-slate-200 hover:bg-slate-50 transition-all">
+                    Back
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <nav class="fixed bottom-0 inset-x-0 bg-white/80 backdrop-blur-2xl border-t border-slate-200/80 z-50 safe-area-bottom">
+        <div class="max-w-lg mx-auto flex items-center justify-around py-2 px-2">
+            <a href="/student/dashboard" class="flex flex-col items-center gap-0.5 px-4 py-1.5 rounded-xl text-indigo-600">
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M11.47 3.84a.75.75 0 011.06 0l8.69 8.69a.75.75 0 101.06-1.06l-8.689-8.69a2.25 2.25 0 00-3.182 0l-8.69 8.69a.75.75 0 001.061 1.06l8.69-8.69z"/>
+                    <path d="M12 5.432l8.159 8.159c.03.03.06.058.091.086v6.198c0 1.035-.84 1.875-1.875 1.875H15.75a.75.75 0 01-.75-.75v-4.5a.75.75 0 00-.75-.75h-4.5a.75.75 0 00-.75.75V21a.75.75 0 01-.75.75H5.625a1.875 1.875 0 01-1.875-1.875v-6.198a2.29 2.29 0 00.091-.086L12 5.432z"/>
+                </svg>
+                <span class="text-[10px] font-bold">Home</span>
+            </a>
+            <a href="/student/raise-pass" class="flex flex-col items-center gap-0.5 px-4 py-1.5 rounded-xl text-slate-400 hover:text-indigo-600 transition">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                </svg>
+                <span class="text-[10px] font-semibold">New Pass</span>
+            </a>
+            <a href="/student/history" class="flex flex-col items-center gap-0.5 px-4 py-1.5 rounded-xl text-slate-400 hover:text-indigo-600 transition">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                <span class="text-[10px] font-semibold">History</span>
+            </a>
+            <a href="/auth/logout" class="flex flex-col items-center gap-0.5 px-4 py-1.5 rounded-xl text-slate-400 hover:text-red-500 transition">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                </svg>
+                <span class="text-[10px] font-semibold">Logout</span>
+            </a>
+        </div>
+    </nav>
+</div>
+{% endblock %}
