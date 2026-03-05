@@ -31,7 +31,8 @@ from app.routes import (
 )
 
 # Thread pool for running sync DB calls without blocking the event loop
-_db_executor = ThreadPoolExecutor(max_workers=2)
+# Use a single thread to reduce memory usage on small Render instances
+_db_executor = ThreadPoolExecutor(max_workers=1)
 
 
 # ─── Background task ─────────────────────────────────────────────────────────
